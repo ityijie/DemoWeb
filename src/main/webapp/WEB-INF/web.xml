@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+          http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+  <!--jie->web.xml相当于android的配置文件，标注各种页面等-->
+
+  <!--jie->定义web应用的名称-->
+  <display-name>DemoWeb</display-name>
+
+  <!--jie->声明web应用的描述信息-->
+  <description></description>
+
+  <!--jie->连接spring-mybatis.xml-->
+  <!--jie->元素声明应用范围内的初始化参数-->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring-mybatis.xml</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>classpath:log4j.properties</param-value>
+  </context-param>
+
+  <!--jie->编码过滤器 -->
+  <!--jie->过滤器元素将一个名字与一个实现javax.servlet.Filter接口的类相关联-->
+  <!--jie->一个filter对应一个filter-mapping-->
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+
+  <!--jie>一旦命名了一个过滤器，就要利用filter-mapping元素把它与一个或多个servlet或JSP页面相关联-->
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/</url-pattern>
+  </filter-mapping>
+
+
+  <!--jie->servlet API的版本2.3增加了对事件监听程序的支持，事件监听程序在建立、修改和删除会话或servlet环境时得到通知,Listener元素指出事件监听程序类-->
+  <!-- spring监听器 -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- 防止spring内存溢出监听器，比如quartz -->
+  <listener>
+    <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+  </listener>
+
+  <!--jie->连接spring-mvc.xml-->
+  <!--jie->在向servlet或JSP页面制定初始化参数或定制URL时，必须首先命名servlet或JSP页面。Servlet元素就是用来完成此项任务的-->
+  <!-- spring mvc servlet-->
+  <!--jie->一个servlet对应一个servlet-mapping-->
+  <!--jie-拦截控制器-DispatcherServlet，可以配置多个-->
+  <!--jie-将拦截到的请求，转移到spring-mvc.xml的页面中-->
+  <!--按照spring-mvc.xml生成指定的bean-->
+  <servlet>
+    <servlet-name>SpringMVC</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring-mvc.xml</param-value>
+    </init-param>
+    <!--是启动顺序，让这个Servlet随Servletp容器一起启动。-->
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+
+  <!--jie->服务器一般为servlet提供一个缺省的URL：http://host/webAppPrefix/servlet/ServletName。
+      但是，常常会更改这个URL，以便servlet可以访问初始化参数或更容易地处理相对URL。
+      在更改缺省URL时，使用servlet-mapping元素-->
+  <servlet-mapping>
+    <servlet-name>SpringMVC</servlet-name>
+    <!-- 此处也可以配置成 *.do 形式 -->
+    <!--<url-pattern>*.form</url-pattern> 会拦截*.form结尾的请求。下面是拦截所有请求-->
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <!--jie-> 指定欢迎文件页配置-->
+  <welcome-file-list>
+    <welcome-file>/index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <!-- jie->session配置,超时会话 -->
+  <!--如果某个会话在一定时间内未被访问，服务器可以抛弃它以节省内存。可通过使用HttpSession的
+    setMaxInactiveInterval方法明确设置单个会话对象的超时值，或者可利用session-config元素制定缺省超时值-->
+  <session-config>
+    <session-timeout>15</session-timeout>
+  </session-config>
+
+  <!--jie-web应用图标-->
+  <icon>
+    <small-icon></small-icon>
+    <large-icon></large-icon>
+  </icon>
+
+  <!--jie-配置错误代码的页面-->
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+
+  <!--jie-配置错误种类页面-->
+  <error-page>
+    <exception-type>java.lang.NullPointerException</exception-type>
+    <location>/exception.jsp</location>
+  </error-page>
+</web-app>
